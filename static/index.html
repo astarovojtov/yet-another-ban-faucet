@@ -98,9 +98,11 @@
                     })
                 }).then(res => { 
                     if (res.ok) {
-                        return vt.success("Claimed! Check your wallet and come back tomorrow!");
+                        vt.success("Claimed! Check your wallet and come back tomorrow!");
                     } else {
-                        res.json().then( result => { vt.error(result.error); }); 
+                        res.json()
+                            .then( result => { vt.error(result.error); })
+                            .catch( err => { vt.error(err); }); 
                     }
                     loader.classList.add('invisible');
                 });
