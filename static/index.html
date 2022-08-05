@@ -9,10 +9,10 @@
         <link rel="stylesheet" href="style.css">
         <script src="ads-prebid.js"></script>
         <script>
-        function hCaptchaOnload() {
-            hcaptcha.render('cptch-1', { sitekey: 'aae10e4b-37b4-43a2-8d4c-99c7632080f0'});
+        // function hCaptchaOnload() {
+        //     hcaptcha.render('cptch-1', { sitekey: 'aae10e4b-37b4-43a2-8d4c-99c7632080f0'});
 
-        }
+        // }
         function send() {
             fetch( '/claim', { 
                 method: 'POST',
@@ -39,9 +39,10 @@
             id="hcaptcha"
             class="h-captcha"
             data-sitekey="aae10e4b-37b4-43a2-8d4c-99c7632080f0"
-            data-callback="send"
+            
             data-size="invisible"
         ></div>
+        <!-- data-callback="send" -->
         <nav>
             <div class="nav shadow">
             <p style="margin: 0; text-transform: uppercase; font-size: 10pt;">More to be developed</p>
@@ -110,14 +111,27 @@
         captchaContainer.setAttribute('data-sitekey', 'aae10e4b-37b4-43a2-8d4c-99c7632080f0');
         document.getElementsByTagName('body')[0].append(captchaContainer);
         
-        // hcaptcha.render('captcha-1', {
-        //     'sitekey': 'aae10e4b-37b4-43a2-8d4c-99c7632080f0',
-        //     'error-callback': () => { vt.error('Captcha failed'); },
-        //     'close-callback': 'claim'
-        // });
-        hcaptcha.execute()
-
-        
+        hcaptcha.execute({ async: true })
+            .then((chellengeesult) => {
+                fetch( '/claim', { 
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        address: sendTo,
+                        event: e
+                    })
+                }).then(res => { 
+                    if (res.ok) {
+                        return res.json()
+                    } else {
+                        res.json().then( result => { vt.error(result.error); }); 
+                    }
+                });
+            }).catch( err => {
+                vt.error(err);
+            });    
     }
 
     
