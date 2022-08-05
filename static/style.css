@@ -87,3 +87,32 @@ body {
     padding: 4pt;
     margin-left: 5pt;
   }
+
+  .loader {
+    position: absolute;
+    margin: 0 auto;
+    top: 50%;
+    left: 50%;
+  }
+
+  .loader svg {
+    animation: spin 1s infinite;
+    border-radius: 30px;
+    background-color: black;
+  }
+  
+  @keyframes spin{
+    0%{
+      -webkit-transform: rotate(0deg);
+      -ms-transform: rotate(0deg);
+      -o-transform: rotate(0deg);
+      transform: rotate(0deg);
+    }
+  
+    100%{
+      -webkit-transform: rotate(360deg);
+      -ms-transform: rotate(360deg);
+      -o-transform: rotate(360deg);
+      transform: rotate(360deg);
+    }
+  }

@@ -8,30 +8,6 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="style.css">
         <script src="ads-prebid.js"></script>
-        <script>
-        // function hCaptchaOnload() {
-        //     hcaptcha.render('cptch-1', { sitekey: 'aae10e4b-37b4-43a2-8d4c-99c7632080f0'});
-
-        // }
-        function send() {
-            fetch( '/claim', { 
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    address: sendTo,
-                    event: e
-                })
-            }).then(res => { 
-                if (res.ok) {
-                    return res.json()
-                } else {
-                    res.json().then( result => { vt.error(result.error); }); 
-                }
-            });
-        }
-        </script>
         <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
     </head>
     <body>
@@ -39,14 +15,11 @@
             id="hcaptcha"
             class="h-captcha"
             data-sitekey="aae10e4b-37b4-43a2-8d4c-99c7632080f0"
-            
             data-size="invisible"
         ></div>
-        <!-- data-callback="send" -->
         <nav>
             <div class="nav shadow">
             <p style="margin: 0; text-transform: uppercase; font-size: 10pt;">More to be developed</p>
-            <!-- <a href="#">Other BAN Faucets List</a> -->
             </div>
         </nav>
   <section class="ad"></section>
@@ -78,7 +51,11 @@
       <p>1 ticket = 1 BAN</p>
     </div> -->
     </section>
-    
+    <div class="loader invisible">
+        <svg height="60" width="60" viewBox="-7 -15 60 60">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M32.5002 12.2394C33.6439 10.9917 27.0418 -1.64061 12.7459 0.178863C10.9265 0.386803 2.50489 2.8301 0.0615896 15.3065C-0.718186 19.1534 6.14384 16.918 7.23552 15.4625C9.88676 11.9795 13.8896 7.71669 16.5408 7.66471C17.0283 7.66471 18.1615 8.33556 19.6335 9.20696C22.4001 10.8448 26.3634 13.191 29.4851 13.1231C30.5248 13.1231 31.7205 13.0711 32.5002 12.2394ZM12.902 11.7196C11.7583 12.9673 18.3604 25.5996 32.6563 23.7802C34.4757 23.5202 42.8973 21.077 45.3406 8.65253C46.1204 4.80564 39.2584 7.04099 38.1667 8.49657C35.5154 11.9796 31.5126 16.2423 28.8614 16.2943C28.3739 16.2943 27.2407 15.6235 25.7687 14.7521C23.0021 13.1143 19.0388 10.768 15.9171 10.8359C14.8774 10.8359 13.6817 10.8879 12.902 11.7196Z" fill="#fbdd11"></path>
+        </svg>
+    </div>
     <footer></footer>
 </body>
 <script>
@@ -106,13 +83,10 @@
             vt.error("You've entered nothing, Jon Snow");
         }
 
-        const captchaContainer = document.createElement('div');
-        captchaContainer.setAttribute('id', 'captcha-1');
-        captchaContainer.setAttribute('data-sitekey', 'aae10e4b-37b4-43a2-8d4c-99c7632080f0');
-        document.getElementsByTagName('body')[0].append(captchaContainer);
-        
+        const loader = document.querySelector('.loader');
         hcaptcha.execute({ async: true })
-            .then((chellengeesult) => {
+            .then((chellengeResult) => {
+                loader.classList.remove('invisible');
                 fetch( '/claim', { 
                     method: 'POST',
                     headers: {
@@ -128,8 +102,10 @@
                     } else {
                         res.json().then( result => { vt.error(result.error); }); 
                     }
+                    loader.classList.add('invisible');
                 });
             }).catch( err => {
+                loader.classList.remove('invisible');
                 vt.error(err);
             });    
     }

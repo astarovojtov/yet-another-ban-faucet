@@ -34,7 +34,7 @@ app.get("/balance", async function (req, res) {
 });
 
 app.post("/claim", async function (req, res) {
-  const address = req.body.address; console.log(typeof address, ' ', address)
+  const address = req.body.address;
   const event = req.body.event;
   const currentIp =
   req.headers["x-forwarded-for"] || req.ip || req.socket.remoteAddress;
