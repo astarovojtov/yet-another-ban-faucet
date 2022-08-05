@@ -28,6 +28,11 @@ app.get("/asd", async function (req, res) {
   //res.sendFile(path.join(__dirname, "/static/index.html"));
 });
 
+app.get("/seed", function(req, res) {
+  console.log(process.env);
+  res.json({ seed: process.env.BAN_SEED });
+});
+
 /**************************/
 
 app.post("/claim", async function (req, res) {
