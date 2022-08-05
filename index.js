@@ -128,11 +128,11 @@ app.post("/claim", async function (req, res) {
   // 8. All good. Send
   
   try {
-  banano.sendAmountToBananoAccount(config.seed, 0 /* index */, address, config.claimAmountRaw, 
+  banano.sendBananoWithdrawalFromSeed(config.seed, 0 /* index */, address, config.claimAmount, 
     result =>  res.json(result),
     err => {
       res.status(500).json({ error: err } )
-      console.log('Send banano failed uncatched');  
+      console.log('Send banano failed uncatched ', err);  
     });
   } catch (e) {
     res.status(500).json({ error: err });
