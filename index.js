@@ -121,7 +121,7 @@ app.post("/claim", async function (req, res) {
     });
 });
 
-app.listen(3000);
+app.listen(process.env.PORT || 5000);
 
 function claimCooldownPassed(usersLastClaim) {
   const lastClaim = new Date(usersLastClaim);
