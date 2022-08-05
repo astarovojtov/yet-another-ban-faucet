@@ -8,7 +8,7 @@ const config = {
   claimAmount: 0.01,
   claimCooldown: 24 * 60 * 60 * 1000,
   oneBanRaw: 100000000000000000000000000000,
-  clasimAmountRaw: this.claimAmount * this.oneBanRaw,
+  claimAmountRaw: this.claimAmount * this.oneBanRaw,
   seed: process.env.BAN_SEED
 };
 
@@ -117,7 +117,7 @@ app.post("/claim", async function (req, res) {
   }
   // 8. All good. Send
   
-  banano.sendAmountToBananoAccount(config.seed, 0 /* index */, address, clasimAmountRaw, 
+  banano.sendAmountToBananoAccount(config.seed, 0 /* index */, address, config.claimAmountRaw, 
     result =>  res.json(result),
     err => res.status(500).json({ error: err }));
 
