@@ -8,9 +8,30 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="style.css">
         <script src="ads-prebid.js"></script>
-        <script>function hCaptchaOnload() {
+        <script>
+        function hCaptchaOnload() {
             hcaptcha.render('cptch-1', { sitekey: 'aae10e4b-37b4-43a2-8d4c-99c7632080f0'});
-        }</script>
+
+        }
+        function send() {
+            fetch( '/claim', { 
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    address: sendTo,
+                    event: e
+                })
+            }).then(res => { 
+                if (res.ok) {
+                    return res.json()
+                } else {
+                    res.json().then( result => { vt.error(result.error); }); 
+                }
+            });
+        }
+        </script>
         <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
     </head>
     <body>
@@ -18,7 +39,7 @@
             id="hcaptcha"
             class="h-captcha"
             data-sitekey="aae10e4b-37b4-43a2-8d4c-99c7632080f0"
-            data-callback="claim"
+            data-callback="send"
             data-size="invisible"
         ></div>
         <nav>
@@ -96,25 +117,10 @@
         // });
         hcaptcha.execute()
 
-        function claim() {
-            fetch( '/claim', { 
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    address: sendTo,
-                    event: e
-                })
-            }).then(res => { 
-                if (res.ok) {
-                    return res.json()
-                } else {
-                    res.json().then( result => { vt.error(result.error); }); 
-                }
-            });
-        }
+        
     }
+
+    
 </script>
 
 <script src="vanilla-toast.min.js"></script>
