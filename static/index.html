@@ -7,30 +7,44 @@
         <meta name="keywords" content="Crypto, Cryptocurrency, Faucet, BAN, Banano, ">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="style.css">
-        
-        <!-- <link rel="stylesheet" type="text/css" href="./static/vanilla-toast.css"> -->
+        <script src="ads-prebid.js"></script>
+        <script>function hCaptchaOnload() {
+            hcaptcha.render('cptch-1', { sitekey: 'aae10e4b-37b4-43a2-8d4c-99c7632080f0'});
+        }</script>
+        <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
     </head>
     <body>
-<nav>
-    <div class="nav">
-      <a href="#">Other BAN Faucets List</a>
-    </div>
-  </nav>
+        <div
+            id="hcaptcha"
+            class="h-captcha"
+            data-sitekey="aae10e4b-37b4-43a2-8d4c-99c7632080f0"
+            data-callback="onSubmit"
+            data-size="invisible"
+        ></div>
+        <nav>
+            <div class="nav shadow">
+            <p style="margin: 0; text-transform: uppercase; font-size: 10pt;">More to be developed</p>
+            <!-- <a href="#">Other BAN Faucets List</a> -->
+            </div>
+        </nav>
   <section class="ad"></section>
+  <p style="font-size:48pt; font-weight: 800; text-transform: uppercase; margin-bottom:0; margin-left: 16pt; margin-top:0">Yet another ban faucet</p>
   <section class="grid">
-    <div class="kindaLogo">
-        <p>Yet another ban faucet</p>
-        <p class="awordfromauthor">Ads are there as an experiment of self sustainability. Please, consider turning ad block off. Thank you in advance.</p>
+    <div style="text-align: right; padding-left:32pt;">
+        <p>Put your ban address, enter captcha and click claim. Come back daily. Enjoy potassium, monkee</p>
     </div>
-    <div class="shadow">
-      <h2>Faucet</h2>
-      <input id="address" type='text'placeholder='Enter your ban address'/>
-      <button id="faucet_claim_btn">Claim</button>
-      <p>Turn adblock off for x3 reward</p>
-      <p class="split"><span>Esitmated claim</span><span> 0.02</span></p>
-      <p class="split"><span>Balance</span><span>123</span></p>
+    <div>
+      <div class="split">
+        <input id="address" type='text' width="100%" placeholder='Enter your ban address'/>
+        
+        <button id="faucet_claim_btn">Claim</button>
+      </div>
+      
+      <p id="adblock">Turn adblock off for x3 reward</p>
+      <p class="split"><span>Esitmated claim</span><span>0.02</span></p>
+      <p class="split"><span>Balance</span><span id="balance">0</span></p>
     </div>
-    <div class="shadow">
+    <!-- <div class="shadow">
       <h2>Lottery</h2>
       <label></label>
       <input type="number" placeholder="Number of tickets"/>
@@ -40,85 +54,69 @@
       <p class="split"><span>Left till lottery raffle:</span><span>12:33</span></p>
       <p class="split"><span>Chance to win the pot:</span><span>78%</span></p>
       <p>1 ticket = 1 BAN</p>
-    </div>
+    </div> -->
     </section>
+    
+    <footer></footer>
 </body>
 <script>
+    if (!hackyHack) {
+        vt.error('Ads are blocked');
+        adblock.classList.contains('invisible') && adblock.classList.remove('invisible');
+    } else {
+        !adblock.classList.contains('invisible') && adblock.classList.add('invisible');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        fetch('/balance').then( res => res.json()).then( res => {
+            document.getElementById('balance').innerText = Number(res.balance).toFixed(2);
+        }).catch( e => {
+            vt.error(e.error);
+        });
+    });
+    
     document.getElementById('faucet_claim_btn').addEventListener('click', claim);
-    const sendFrom = 'ban_3gahaiusraz8qnotf3skqn3myo74o9f7hroqw8hhny51zkkx5ikbxsbat69c';
-    const faucet_claim_amnt = 0.02;
     function claim(e) {
         if (!e.isTrusted) { return; }
+        
         const sendTo = document.getElementById('address').value;
-        fetch( '/claim', { 
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                address: sendTo
-            })
-        }).then(res => { 
-            if (res.ok) {
-                return res.json()
-            } else {
-                res.json().then( result => { vt.error(result.error); }); 
-            }
-        });
-        
-        
-        /* 1. Validate address */
-        // try {
-        //     bananocoinBananojs.getAccountPublicKey(sendTo);
-        // } catch (e) {
-        //     console.error(e);
-        // }
-        /* 2. Balance */
+        if (!sendTo || sendTo.length === 0) {
+            vt.error("You've entered nothing, Jon Snow");
+        }
 
-        // try {
-        //     bananocoinBananojs.getAccountInfo(sendFrom)
-        //         .then((info) => {
-        //             if (Number(info.balance_decimal) < faucet_claim_amnt) {
-        //                 throw new Error('Balance too low. Please try again later');
-        //                 return;
-        //             }
-        //         });
-        // } catch(e) {
-        //     console.error(e);
-        // }
-        /* 3. Captcha (if custom-crafted) */
-        /* 4. Check wether this address already grabbed a claim */
+        const captchaContainer = document.createElement('div');
+        captchaContainer.setAttribute('id', 'captcha-1');
+        captchaContainer.setAttribute('data-sitekey', 'aae10e4b-37b4-43a2-8d4c-99c7632080f0');
+        document.getElementsByTagName('body')[0].append(captchaContainer);
         
-        // try {
-        //     bananocoinBananojs.getAccountHistory(sendTo, 100 /* count */);
-        // } catch(e) {
-        //     console.error(e);
-        // }
+        // hcaptcha.render('captcha-1', {
+        //     'sitekey': 'aae10e4b-37b4-43a2-8d4c-99c7632080f0',
+        //     'error-callback': () => { vt.error('Captcha failed'); },
+        //     'close-callback': 'claim'
+        // });
+        hcaptcha.execute()
 
-        // 5. Check wether related addresses already grabbed a claim
-        /*** Hmmm... probably cant ***/
-        // 6. Check wether address is blacklisted
-        /*** Get from json file ***/
-        // 7. Check same IP-address already grabbed
-        /*** Get from hosting ***/
-        // 8. Unopened account
-        
-        /*** 10. Send ***/
-       
-        // try {
-        //     bananocoinBananojs
-        //         .sendAmountToBananoAccount(
-        //             '4DEA224CDB9C1D52C9F8638EF38A513AB875B6551DB40D759384A2F204D62F00',
-        //             0,
-        //             sendTo,
-        //             100000000000000000000000000000 /* amountRaw */,
-        //             (res) => res,
-        //             (err) => err)
-        // } catch(e) {
-        //     console.error(e);
-        // }
+        function claim() {
+            fetch( '/claim', { 
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    address: sendTo,
+                    event: e
+                })
+            }).then(res => { 
+                if (res.ok) {
+                    return res.json()
+                } else {
+                    res.json().then( result => { vt.error(result.error); }); 
+                }
+            });
+        }
     }
 </script>
 
 <script src="vanilla-toast.min.js"></script>
+
 </html>

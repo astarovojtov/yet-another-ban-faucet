@@ -1,17 +1,20 @@
 html {
     font-family: Helvetica, sans-serif;
     font-weight: 100;
+    font-size: 15pt;
   }
 
 body {
     background: linear-gradient(170deg, white 0%, white 14.9%, #fbdd11 15%, #FBDD10 84.99%, white 85%, white 100%);
     height: 100vh;
+    margin: 0 auto;
 }
   
   .nav {
     display: flex;
     justify-content: end;
-    background-color: none; /* orange; */
+    padding: 15pt;
+    background-color: white;
   }
   
   /* .nav > * {
@@ -36,28 +39,11 @@ body {
     /* align-items: center;
     align-self: stretch; */
   }
-  
-  .kindaLogo {
-    font-weight: 800;
-    font-size: 36pt;
-    line-height: 0.8;
-    align-self: center;
-    text-transform: uppercase;
-  }
-  .grid > div.kindaLogo {
-    border: none;
-  }
-
-  .awordfromauthor {
-    font-size: 12pt;
-    font-weight: 100;
-    line-height: 1;
-    text-transform: none;
-  }
+ 
   .grid > div {
-    width: 80%;
+    /* width: 80%; */
     border-radius: 3px;
-    padding: 10px;
+    padding: 12pt;
   }
   
   .grid h2, .grid h3 {
@@ -73,7 +59,31 @@ body {
   .split {
     display: flex;
     justify-content: space-between;
+    text-transform: uppercase;
+    line-height: 1;
     }
-    .shadow {
-        box-shadow: -1px 1px 5pt dimgrey;
+    .split span:last-child {
+      font-weight: 800;
     }
+  .shadow {
+      box-shadow: -1px 1px 5pt dimgrey;
+  }
+  .invisible {
+    display: none;
+  }
+  .card {
+    background-color: #fbcb10;
+  }
+  #address {
+    width: 100%;
+  }
+
+  .split input, button {
+    font-size: 14pt;
+    
+  }
+
+  .split button {
+    padding: 4pt;
+    margin-left: 5pt;
+  }

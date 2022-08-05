@@ -70,7 +70,6 @@ function all(sql) {
       if (err) {
         reject(err);
       }
-      console.log("db.all => ", data);
       resolve(data);
     });
   });

@@ -9,6 +9,7 @@ const config = {
   claimCooldown: 24 * 60 * 60 * 1000,
   oneBanRaw: 100000000000000000000000000000,
   clasimAmountRaw: this.claimAmount * this.oneBanRaw,
+  seed: process.env.BAN_SEED
 };
 
 let db;
@@ -18,33 +19,38 @@ database.initDb().then((sqlite) => {
 
 app.use(express.json());
 app.use(express.static(__dirname + "/static"));
+banano.bananodeApi.setUrl("https://kaliumapi.appditto.com/api");
 
-app.get("/asd", async function (req, res) {
+app.get("/users", async function (req, res) {
   const sql = "SELECT * FROM Users";
-  const ip = req.headers["x-forwarded-for"] || req.socket.remoteAddress;
-
   const getAll = await database.all(sql);
   res.json(await getAll);
   //res.sendFile(path.join(__dirname, "/static/index.html"));
 });
 
-app.get("/seed", function(req, res) {
-  console.log(process.env);
-  res.json({ seed: process.env.BAN_SEED });
+app.get("/balance", async function (req, res) {
+  const balance = await banano.getAccountInfo(config.faucetWallet);
+  
+  res.json({ balance: balance.balance_decimal });
+  //res.sendFile(path.join(__dirname, "/static/index.html"));
 });
-
-/**************************/
 
 app.post("/claim", async function (req, res) {
   const address = req.body.address;
+  const event = req.body.event;
+  const currentIp =
+  req.headers["x-forwarded-for"] || req.ip || req.socket.remoteAddress;
+  
+  if (!event.isTrusted) {
+    res.json({ error: "Somtheing vary bad happened!" });
+    return;
+  }
+
   if (!address) {
     res.json({ error: "Provide valid BAN address to continue" });
     return;
   }
-  const currentIp =
-    req.headers["x-forwarded-for"] || req.ip || req.socket.remoteAddress;
-
-  banano.bananodeApi.setUrl("https://kaliumapi.appditto.com/api");
+  // banano.bananodeApi.setUrl("https://kaliumapi.appditto.com/api");
 
   /* 1. Validate address */
   const bAddressValid = await banano.getBananoAccountValidationInfo(address)
