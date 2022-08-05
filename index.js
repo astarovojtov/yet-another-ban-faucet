@@ -34,7 +34,7 @@ app.get("/balance", async function (req, res) {
 });
 
 app.post("/claim", async function (req, res) {
-  const address = req.body.address;
+  const address = req.body.address; console.log(typeof address, ' ', address)
   const event = req.body.event;
   const currentIp =
   req.headers["x-forwarded-for"] || req.ip || req.socket.remoteAddress;
@@ -127,13 +127,9 @@ app.post("/claim", async function (req, res) {
   console.log('IP check passed');
   // 8. All good. Send
   
-  try {
-  banano.sendBananoWithdrawalFromSeed(config.seed, 0 /* index */, address, config.claimAmount, 
-    result =>  res.json(result),
-    err => {
-      res.status(500).json({ error: err } )
-      console.log('Send banano failed uncatched ', err);  
-    });
+  try {  
+    const hash = await banano.sendBananoWithdrawalFromSeed(config.seed, 0 /* index */, address, config.claimAmount);
+    res.json({ hash: hash });
   } catch (e) {
     res.status(500).json({ error: err });
     console.log('Send banano failed and catched');
