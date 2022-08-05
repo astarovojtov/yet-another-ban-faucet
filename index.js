@@ -116,15 +116,18 @@ app.post("/claim", async function (req, res) {
     }
   }
   // 8. All good. Send
-  //GET seed from environment variable
-  //banano.sendAmountToBananoAccount('seed', 0 /* index */, address, clasimAmountRaw, res => res, err => err);
+  
+  banano.sendAmountToBananoAccount(config.seed, 0 /* index */, address, clasimAmountRaw, 
+    result =>  res.json(result),
+    err => res.status(500).json({ error: err }));
 
   // 9. Update user ip, lastClaim
   const setIpSql = `UPDATE Users SET ip = '${currentIp}', lastClaim = '${new Date().toISOString()}' WHERE address ='${address}'`;
   database
     .run(setIpSql)
-    .then((result) => {
-      res.json(result);
+    .then(() => {
+      //updates silently
+      // res.json({ message: "Successful claim"});
     })
     .catch((err) => {
       console.log(err);

@@ -124,7 +124,7 @@
                     })
                 }).then(res => { 
                     if (res.ok) {
-                        return res.json()
+                        return vt.success("Claimed! Check your wallet and come back tomorrow!");
                     } else {
                         res.json().then( result => { vt.error(result.error); }); 
                     }
