@@ -1,0 +1,79 @@
+html {
+    font-family: Helvetica, sans-serif;
+    font-weight: 100;
+  }
+
+body {
+    background: linear-gradient(170deg, white 0%, white 14.9%, #fbdd11 15%, #FBDD10 84.99%, white 85%, white 100%);
+    height: 100vh;
+}
+  
+  .nav {
+    display: flex;
+    justify-content: end;
+    background-color: none; /* orange; */
+  }
+  
+  /* .nav > * {
+    display: inline-block;
+  } */
+  
+  .nav > a {
+    /* padding-top: 15px; */
+    text-decoration: none;
+    color: black;
+    margin-right: 16pt;
+  }
+  
+  .nav>a:hover {
+    color: yellow;
+  }
+  
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 4fr);
+    grid-gap: 32pt;
+    /* align-items: center;
+    align-self: stretch; */
+  }
+  
+  .kindaLogo {
+    font-weight: 800;
+    font-size: 36pt;
+    line-height: 0.8;
+    align-self: center;
+    text-transform: uppercase;
+  }
+  .grid > div.kindaLogo {
+    border: none;
+  }
+
+  .awordfromauthor {
+    font-size: 12pt;
+    font-weight: 100;
+    line-height: 1;
+    text-transform: none;
+  }
+  .grid > div {
+    width: 80%;
+    border-radius: 3px;
+    padding: 10px;
+  }
+  
+  .grid h2, .grid h3 {
+    text-align: center;
+    text-transform: uppercase;
+  }
+  .ad {
+    height: 150px; 
+    width: 100vw;
+    content: '';
+    margin: 16pt 0;
+  }
+  .split {
+    display: flex;
+    justify-content: space-between;
+    }
+    .shadow {
+        box-shadow: -1px 1px 5pt dimgrey;
+    }

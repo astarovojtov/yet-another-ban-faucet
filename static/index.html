@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Yet Another BAN Faucet</title>
+        <meta charset="UTF-8">
+        <meta name="description" content="Get free banano cryptocurrency every day">
+        <meta name="keywords" content="Crypto, Cryptocurrency, Faucet, BAN, Banano, ">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="style.css">
+        
+        <!-- <link rel="stylesheet" type="text/css" href="./static/vanilla-toast.css"> -->
+    </head>
+    <body>
+<nav>
+    <div class="nav">
+      <a href="#">Other BAN Faucets List</a>
+    </div>
+  </nav>
+  <section class="ad"></section>
+  <section class="grid">
+    <div class="kindaLogo">
+        <p>Yet another ban faucet</p>
+        <p class="awordfromauthor">Ads are there as an experiment of self sustainability. Please, consider turning ad block off. Thank you in advance.</p>
+    </div>
+    <div class="shadow">
+      <h2>Faucet</h2>
+      <input id="address" type='text'placeholder='Enter your ban address'/>
+      <button id="faucet_claim_btn">Claim</button>
+      <p>Turn adblock off for x3 reward</p>
+      <p class="split"><span>Esitmated claim</span><span> 0.02</span></p>
+      <p class="split"><span>Balance</span><span>123</span></p>
+    </div>
+    <div class="shadow">
+      <h2>Lottery</h2>
+      <label></label>
+      <input type="number" placeholder="Number of tickets"/>
+      <button>Buy</button>
+      <p class="split"><span>Current pot:</span><span>345</span></p>
+      <p class="split"><span>Current entrants:</span><span>12</span></p>
+      <p class="split"><span>Left till lottery raffle:</span><span>12:33</span></p>
+      <p class="split"><span>Chance to win the pot:</span><span>78%</span></p>
+      <p>1 ticket = 1 BAN</p>
+    </div>
+    </section>
+</body>
+<script>
+    document.getElementById('faucet_claim_btn').addEventListener('click', claim);
+    const sendFrom = 'ban_3gahaiusraz8qnotf3skqn3myo74o9f7hroqw8hhny51zkkx5ikbxsbat69c';
+    const faucet_claim_amnt = 0.02;
+    function claim(e) {
+        if (!e.isTrusted) { return; }
+        const sendTo = document.getElementById('address').value;
+        fetch( '/claim', { 
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                address: sendTo
+            })
+        }).then(res => { 
+            if (res.ok) {
+                return res.json()
+            } else {
+                res.json().then( result => { vt.error(result.error); }); 
+            }
+        });
+        
+        
+        /* 1. Validate address */
+        // try {
+        //     bananocoinBananojs.getAccountPublicKey(sendTo);
+        // } catch (e) {
+        //     console.error(e);
+        // }
+        /* 2. Balance */
+
+        // try {
+        //     bananocoinBananojs.getAccountInfo(sendFrom)
+        //         .then((info) => {
+        //             if (Number(info.balance_decimal) < faucet_claim_amnt) {
+        //                 throw new Error('Balance too low. Please try again later');
+        //                 return;
+        //             }
+        //         });
+        // } catch(e) {
+        //     console.error(e);
+        // }
+        /* 3. Captcha (if custom-crafted) */
+        /* 4. Check wether this address already grabbed a claim */
+        
+        // try {
+        //     bananocoinBananojs.getAccountHistory(sendTo, 100 /* count */);
+        // } catch(e) {
+        //     console.error(e);
+        // }
+
+        // 5. Check wether related addresses already grabbed a claim
+        /*** Hmmm... probably cant ***/
+        // 6. Check wether address is blacklisted
+        /*** Get from json file ***/
+        // 7. Check same IP-address already grabbed
+        /*** Get from hosting ***/
+        // 8. Unopened account
+        
+        /*** 10. Send ***/
+       
+        // try {
+        //     bananocoinBananojs
+        //         .sendAmountToBananoAccount(
+        //             '4DEA224CDB9C1D52C9F8638EF38A513AB875B6551DB40D759384A2F204D62F00',
+        //             0,
+        //             sendTo,
+        //             100000000000000000000000000000 /* amountRaw */,
+        //             (res) => res,
+        //             (err) => err)
+        // } catch(e) {
+        //     console.error(e);
+        // }
+    }
+</script>
+
+<script src="vanilla-toast.min.js"></script>
+</html>
