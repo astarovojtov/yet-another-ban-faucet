@@ -36,7 +36,7 @@
       </div>
       
       <p id="adblock">Turn adblock off for x3 reward</p>
-      <p class="split"><span>Esitmated claim</span><span>0.02</span></p>
+      <p class="split"><span>Estimated claim</span><span>0.02</span></p>
       <p class="split"><span>Balance</span><span id="balance">0</span></p>
     </div>
     <!-- <div class="shadow">
@@ -57,6 +57,7 @@
         </svg>
     </div>
     <footer></footer>
+    <div class="overlay invisible"></div>
 </body>
 <script>
     if (!hackyHack) {
@@ -84,9 +85,11 @@
         }
 
         const loader = document.querySelector('.loader');
+        const overlay = document.querySelector('.overlay');
         hcaptcha.execute({ async: true })
             .then((chellengeResult) => {
                 loader.classList.remove('invisible');
+                overlay.classList.remove('invisible');
                 fetch( '/claim', { 
                     method: 'POST',
                     headers: {
@@ -105,9 +108,11 @@
                             .catch( err => { vt.error(err); }); 
                     }
                     loader.classList.add('invisible');
+                    overlay.classList.add('invisible');
                 });
             }).catch( err => {
                 loader.classList.remove('invisible');
+                overlay.classList.remove('invisible');
                 vt.error(err);
             });    
     }

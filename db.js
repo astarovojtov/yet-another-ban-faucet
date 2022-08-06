@@ -14,7 +14,7 @@ const db = new sqlite3.Database(dbFile, (err) => {
   console.log("Successful connection to the database 'apptest.db'");
 });
 
-function initDb() {
+function initDb(pushMock) {
   if (!dbExists) {
     const sqlCreate = `CREATE TABLE IF NOT EXISTS Users (
               "userId" INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -37,15 +37,19 @@ function initDb() {
         }
         console.log("Created table Users");
 
-        db.run(sqlInsert, (err) => {
-          if (err) {
-            console.error(err.message);
-            reject(err);
-            return;
-          }
-          console.log("Filled table Users with data");
+        if (pushMock) {
+          db.run(sqlInsert, (err) => {
+            if (err) {
+              console.error(err.message);
+              reject(err);
+              return;
+            }
+            console.log("Filled table Users with data");
+            resolve(db);
+          });
+        } else {
           resolve(db);
-        });
+        }
       });
     });
     return promise;

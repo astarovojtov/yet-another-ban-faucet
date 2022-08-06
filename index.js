@@ -5,21 +5,45 @@ const database = require("./db");
 const config = {
   faucetWallet:
     "ban_3f1o95qeeg1zignw11ew5sfaxhzogsj3hzm377xjtmab8hwz535p6f96i5uu",
-  claimAmount: 0.01,
+  claimAmount: 0.02,
   claimCooldown: 24 * 60 * 60 * 1000,
   oneBanRaw: 100000000000000000000000000000,
   claimAmountRaw: this.claimAmount * this.oneBanRaw,
   seed: process.env.BAN_SEED
 };
 
+banano.bananodeApi.setUrl("https://kaliumapi.appditto.com/api");
+
 let db;
-database.initDb().then((sqlite) => {
+database.initDb(false /*pushMock*/).then(async (sqlite) => {
   db = sqlite;
+  const entries = await database.all('SELECT * FROM Users');
+  
+  if (entries.length > 0) {
+    return;
+  }
+
+  banano.getAccountHistory(config.faucetWallet, 200).then( (response, rej) => {
+    const norm = [];
+
+    response.history.filter( trx => trx.type === 'send')
+      .forEach( (next) => {
+        if (!norm.find( i => i.account === next.account)) {
+          norm.push(next);
+        }
+    });
+    //
+    const sqlRows = norm.map( (item, index) => `('${item.account}', 0, '${new Date(item.local_timestamp * 1000).toISOString()}', '::1', 'Pushed from history')`);
+    const sql = `INSERT INTO Users ( address, banned, lastClaim, ip, comment) VALUES `.concat(sqlRows.join(','));
+    database.run(sql)
+      .then(() => console.log('Pushed from history'))
+      .catch(err => console.log(err));
+  })
 });
 
 app.use(express.json());
 app.use(express.static(__dirname + "/static"));
-banano.bananodeApi.setUrl("https://kaliumapi.appditto.com/api");
+
 
 app.get("/users", async function (req, res) {
   const sql = "SELECT * FROM Users";
