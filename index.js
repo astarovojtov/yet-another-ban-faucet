@@ -2,10 +2,11 @@ const express = require("express");
 const app = express();
 const banano = require("@bananocoin/bananojs");
 const database = require("./db");
+const sanitizeHtml = require("sanitize-html");
 const config = {
   faucetWallet:
     "ban_3f1o95qeeg1zignw11ew5sfaxhzogsj3hzm377xjtmab8hwz535p6f96i5uu",
-  claimAmount: 0.02,
+  claimAmount: 0.04,
   claimCooldown: 24 * 60 * 60 * 1000,
   oneBanRaw: 100000000000000000000000000000,
   claimAmountRaw: this.claimAmount * this.oneBanRaw,
@@ -58,7 +59,7 @@ app.get("/balance", async function (req, res) {
 });
 
 app.post("/claim", async function (req, res) {
-  const address = req.body.address;
+  const address = sanitizeHtml(req.body.address);
   const event = req.body.event;
   const currentIp =
   req.headers["x-forwarded-for"] || req.ip || req.socket.remoteAddress;

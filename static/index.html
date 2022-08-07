@@ -9,6 +9,7 @@
         <link rel="stylesheet" href="style.css">
         <script src="ads-prebid.js"></script>
         <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+        <script src="https://cdn.jsdelivr.net/gh/jitbit/HtmlSanitizer@master/HtmlSanitizer.js"></script>
     </head>
     <body>
         <div
@@ -23,10 +24,10 @@
             </div>
         </nav>
   <section class="ad"></section>
-  <p style="font-size:48pt; font-weight: 800; text-transform: uppercase; margin-bottom:0; margin-left: 16pt; margin-top:0">Yet another ban faucet</p>
+  <p class="kinda-logo">Yet another ban faucet</p>
   <section class="grid">
-    <div style="text-align: right; padding-left:32pt;">
-        <p>Put your ban address, enter captcha and click claim. Come back daily. Enjoy potassium, monkee</p>
+    <div class="description">
+        <p>Put your ban address, enter captcha and click claim. Come back daily.<br/>Enjoy potassium, monkee</p>
     </div>
     <div>
       <div class="split">
@@ -36,7 +37,7 @@
       </div>
       
       <p id="adblock">Turn adblock off for x3 reward</p>
-      <p class="split"><span>Estimated claim</span><span>0.02</span></p>
+      <p class="split"><span>Estimated claim</span><span>0.04</span></p>
       <p class="split"><span>Balance</span><span id="balance">0</span></p>
     </div>
     <!-- <div class="shadow">
@@ -79,7 +80,7 @@
     function claim(e) {
         if (!e.isTrusted) { return; }
         
-        const sendTo = document.getElementById('address').value;
+        const sendTo = HtmlSanitizer.SanitizeHtml(document.getElementById('address').value);
         if (!sendTo || sendTo.length === 0) {
             vt.error("You've entered nothing, Jon Snow");
         }
@@ -111,8 +112,8 @@
                     overlay.classList.add('invisible');
                 });
             }).catch( err => {
-                loader.classList.remove('invisible');
-                overlay.classList.remove('invisible');
+                loader.classList.add('invisible');
+                overlay.classList.add('invisible');
                 vt.error(err);
             });    
     }
