@@ -68,6 +68,7 @@ app.post("/claim", async function (req, res) {
   if (!event.isTrusted) {
     res.json({ error: "Somtheing vary bad happened!" });
     logMessages.push('Event is not trusted');
+    console.log(logMessages.join(' '));
     return;
   }
   logMessages.push('Event is trusted');
@@ -75,6 +76,7 @@ app.post("/claim", async function (req, res) {
   if (!address) {
     res.json({ error: "Provide valid BAN address to continue" });
     logMessages.push('Ban address was not provided');
+    console.log(logMessages.join(' '));
     return;
   }
   logMessages.push('Address is present');
@@ -85,6 +87,7 @@ app.post("/claim", async function (req, res) {
   if (!bAddressValid) {
     res.status(500).json({ error: "Invalid BAN address" });
     logMessages.push('Address is invalid');
+    console.log(logMessages.join(' '));
     return;
   }
   logMessages.push('Address is valid');
@@ -95,6 +98,7 @@ app.post("/claim", async function (req, res) {
   if (bIsUnopened) {
     res.status(418).json({ error: "Unopened account" });
     logMessages.push('Account is unopened');
+    console.log(logMessages.join(' '));
     return;
   }
   logMessages.push('Account is opened');
@@ -105,6 +109,7 @@ app.post("/claim", async function (req, res) {
   if (Number(faucetWalletInfo.balance_decimal) < config.claimAmount) {
     res.status(500).json({ error: "Balance too low. Please try again later" });
     logMessages.push('Balance low');
+    console.log(logMessages.join(' '));
     return;
   }
   logMessages.push('Balance is sufficient');
@@ -120,6 +125,7 @@ app.post("/claim", async function (req, res) {
   if (!claimCooldownPassed(user.lastClaim)) {
     res.status(418).json({ error: "Come back later" });
     logMessages.push('User is on cooldown');
+    console.log(logMessages.join(' '));
     return;
   }
   logMessages.push('User is not on cooldown');
@@ -127,6 +133,7 @@ app.post("/claim", async function (req, res) {
   if (user.banned) {
     res.status(418).json({ error: "You were banned. Bye" });
     logMessages.push('User banned');
+    console.log(logMessages.join(' '));
     return;
   }
   logMessages.push('User is not banned');
@@ -147,6 +154,7 @@ app.post("/claim", async function (req, res) {
     if (!claimCooldownPassed(theUser.lastClaim)) {
       res.status(418).json({ error: "Come back later" });
       logMessages.push('Same IP check failed');
+      console.log(logMessages.join(' '));
       return;
     }
   }
@@ -156,6 +164,7 @@ app.post("/claim", async function (req, res) {
   try {  
     const hash = await banano.sendBananoWithdrawalFromSeed(config.seed, 0 /* index */, address, config.claimAmount);
     res.json({ hash: hash });
+    logMessages.push(`Claim successfull, hash: ${hash}`);
   } catch (e) {
     res.status(500).json({ error: err });
     logMessages.push('Send banano failed and catched');
@@ -172,11 +181,13 @@ app.post("/claim", async function (req, res) {
       // res.json({ message: "Successful claim"});
       logMessages.push('User updated after a claim');
       console.log(logMessages.join(' '));
+      return;
     })
     .catch((err) => {
       logMessages.push(err);
       console.log(logMessages.join(' '));
       res.status(500).json({ error: "Something went wrong. Hold on" });
+      return;
     });
 });
 
