@@ -61,8 +61,8 @@
                 </div> -->
     </section>
     <section class="mokeys-served">
-        <p class="kinda-logo">Monkeys served</p>
-        <p>Showing only 10 last monkees served</p>
+        <p class="kinda-logo">Monkees served</p>
+        <p style="margin-top: 0;">Showing only 10 last potassium rich apes</p>
         <div class="monkey-pictures"></div>
     </section>
     <div class="loader invisible">
@@ -155,14 +155,15 @@
                         fetch(`https://monkey.banano.cc/api/v1/monkey/${sendTo}`)
                             .then( svg => svg.text())
                             .then( svg => {
-                                // svg.replace('<?xml version="1.0"?>', '');
+                                const section = document.querySelector('.monkey-pictures');
                                 const div = document.createElement('div');
                                 div.classList.add('monkee');
                                 div.innerHTML = svg;
                                 div.setAttribute('data-address', sendTo);
                                 div.setAttribute('data-claim', 'just now');
                                 div.classList.add('just-arrived');
-                                document.querySelector('.monkey-pictures').prepend(div);
+                                section.prepend(div);
+                                section.lastChild.remove();
                             })
                             .catch(e => console.log(e));
                     } else {
