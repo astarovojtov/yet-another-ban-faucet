@@ -123,7 +123,13 @@ app.post("/claim", async function (req, res) {
   }
 
   if (!claimCooldownPassed(user.lastClaim)) {
-    res.status(418).json({ error: "Come back later" });
+    const nextClaimAvailableAt = new Date(
+      lastClaim.getTime() + 24 * 60 * 60 * 1000
+    );
+    const timeLeft = nextClaimAvailableAt.getTime() - new Date().getTime();
+    const hours = Math.round(timeLeft/1000/60/60%24);
+
+    res.status(418).json({ error: `Claim too soon. Come back in ${hours} ${hours > 1 ? 'hours' : 'hour'}` });
     logMessages.push('User is on cooldown');
     console.log(logMessages.join(' '));
     return;
@@ -152,7 +158,7 @@ app.post("/claim", async function (req, res) {
       .pop();
 
     if (!claimCooldownPassed(theUser.lastClaim)) {
-      res.status(418).json({ error: "Come back later" });
+      res.status(418).json({ error: "Already claimed from this IP" });
       logMessages.push('Same IP check failed');
       console.log(logMessages.join(' '));
       return;

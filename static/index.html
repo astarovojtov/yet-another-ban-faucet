@@ -73,7 +73,9 @@
     <footer></footer>
     <div class="overlay invisible"></div>
 </body>
+<script src="vanilla-toast.min.js"></script>
 <script>
+    vt.options.duration = 3000;
     if (!hackyHack) {
         vt.error('Ads are blocked');
         adblock.classList.contains('invisible') && adblock.classList.remove('invisible');
@@ -180,7 +182,4 @@
 
     
 </script>
-
-<script src="vanilla-toast.min.js"></script>
-
 </html>
