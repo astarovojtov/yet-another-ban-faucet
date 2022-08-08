@@ -6,7 +6,6 @@ html {
 
 body {
     background: linear-gradient(170deg, white 0%, white 14.9%, #fbdd11 15%, #FBDD10 84.99%, white 85%, white 100%);
-    height: 100vh;
     margin: 0 auto;
 }
   
@@ -63,7 +62,6 @@ body {
   }
   .ad {
     height: 150px; 
-    width: 100vw;
     content: '';
     margin: 16pt 0;
   }
@@ -136,6 +134,21 @@ body {
   .description {
     text-align: right;
     padding-left:32pt;
+  }
+
+  .monkee {
+    width: 10%;
+    display: inline-block;
+  }
+
+  .monkee:hover {
+    opacity: 0.8;
+    cursor: pointer;
+  }
+
+  .mokeys-served {
+    margin-right: 16pt;
+    text-align: right;
   }
   
   @keyframes spin{

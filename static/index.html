@@ -32,34 +32,38 @@
             <p style="margin: 0; text-transform: uppercase; font-size: 10pt;">More to be developed</p>
             </div>
         </nav>
-  <section class="ad"></section>
-  <p class="kinda-logo">Yet another ban faucet</p>
-  <section class="grid">
-    <div class="description">
-        <p>Put your ban address, enter captcha and click claim. Come back daily.<br/>Enjoy potassium, monkee</p>
-    </div>
-    <div>
-      <div class="split">
-        <input id="address" type='text' width="100%" placeholder='Enter your ban address'/>
-        
-        <button id="faucet_claim_btn">Claim</button>
-      </div>
-      
-      <p id="adblock">Turn adblock off for x3 reward</p>
-      <p class="split"><span>Estimated claim</span><span>0.04</span></p>
-      <p class="split"><span>Balance</span><span id="balance">0</span></p>
-    </div>
-    <!-- <div class="shadow">
-      <h2>Lottery</h2>
-      <label></label>
-      <input type="number" placeholder="Number of tickets"/>
-      <button>Buy</button>
-      <p class="split"><span>Current pot:</span><span>345</span></p>
-      <p class="split"><span>Current entrants:</span><span>12</span></p>
-      <p class="split"><span>Left till lottery raffle:</span><span>12:33</span></p>
-      <p class="split"><span>Chance to win the pot:</span><span>78%</span></p>
-      <p>1 ticket = 1 BAN</p>
-    </div> -->
+        <section class="ad"></section>
+        <p class="kinda-logo">Yet another ban faucet</p>
+        <section class="grid">
+            <div class="description">
+                <p>Put your ban address, enter captcha and click claim. Come back daily.<br/>Enjoy potassium, monkee</p>
+            </div>
+            <div>
+            <div class="split">
+                <input id="address" type='text' width="100%" placeholder='Enter your ban address'/>             
+                <button id="faucet_claim_btn">Claim</button>
+            </div>
+                
+            <p id="adblock">Turn adblock off for x3 reward (doesn't work just yet)</p>
+            <p class="split"><span>Estimated claim</span><span>0.04</span></p>
+            <p class="split"><span>Balance</span><span id="balance">0</span></p>
+        </div>
+                <!-- <div class="shadow">
+                <h2>Lottery</h2>
+                <label></label>
+                <input type="number" placeholder="Number of tickets"/>
+                <button>Buy</button>
+                <p class="split"><span>Current pot:</span><span>345</span></p>
+                <p class="split"><span>Current entrants:</span><span>12</span></p>
+                <p class="split"><span>Left till lottery raffle:</span><span>12:33</span></p>
+                <p class="split"><span>Chance to win the pot:</span><span>78%</span></p>
+                <p>1 ticket = 1 BAN</p>
+                </div> -->
+    </section>
+    <section class="mokeys-served">
+        <p class="kinda-logo">Monkeys served</p>
+        <p>Showing only 10 last monkees served</p>
+        <div class="monkey-pictures"></div>
     </section>
     <div class="loader invisible">
         <svg height="60" width="60" viewBox="-7 -15 60 60">
@@ -83,6 +87,40 @@
         }).catch( e => {
             vt.error(e.error);
         });
+
+        fetch('/users')
+            .then( users => users.json())
+            .then( users => {
+                const section = document.querySelector('.monkey-pictures');
+                section.addEventListener('click', (e) => {
+                    let div = e.target;
+                    while (div.nodeName !== 'DIV') {
+                        div = div.parentElement;
+                    }
+                                    
+                    const address = div.getAttribute('data-address');
+                    const claim = div.getAttribute('data-claim');
+                    vt.info(`${address} claimed at ${new Date(claim).toLocaleString()}`);
+                });
+
+                users.sort((a,b) => new Date(a.lastClaim) > new Date(b.lastClaim))
+                    .slice(0, 10)
+                    .forEach( monkey => {
+                        fetch(`https://monkey.banano.cc/api/v1/monkey/${monkey.address}`)
+                            .then( svg => svg.text())
+                            .then( svg => {
+                                // svg.replace('<?xml version="1.0"?>', '');
+                                const div = document.createElement('div');
+                                div.classList.add('monkee');
+                                div.innerHTML = svg;
+                                div.setAttribute('data-address', monkey.address);
+                                div.setAttribute('data-claim', monkey.lastClaim);
+                                section.append(div);
+                            })
+                            .catch(e => console.log(e));
+                    });
+                
+            })
     });
     
     document.getElementById('faucet_claim_btn').addEventListener('click', claim);
@@ -112,6 +150,18 @@
                 }).then(res => { 
                     if (res.ok) {
                         vt.success("Claimed! Check your wallet and come back tomorrow!");
+                        fetch(`https://monkey.banano.cc/api/v1/monkey/${sendTo}`)
+                            .then( svg => svg.text())
+                            .then( svg => {
+                                // svg.replace('<?xml version="1.0"?>', '');
+                                const div = document.createElement('div');
+                                div.classList.add('monkee');
+                                div.innerHTML = svg;
+                                div.setAttribute('data-address', sendTo);
+                                div.setAttribute('data-claim', 'just now');
+                                section.append(div);
+                            })
+                            .catch(e => console.log(e));
                     } else {
                         res.json()
                             .then( result => { vt.error(result.error); })
