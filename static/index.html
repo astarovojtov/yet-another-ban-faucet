@@ -159,7 +159,8 @@
                                 div.innerHTML = svg;
                                 div.setAttribute('data-address', sendTo);
                                 div.setAttribute('data-claim', 'just now');
-                                document.querySelector('.monkey-pictures').append(div);
+                                div.classList.add('just-arrived');
+                                document.querySelector('.monkey-pictures').prepend(div);
                             })
                             .catch(e => console.log(e));
                     } else {
