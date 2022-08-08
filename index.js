@@ -124,7 +124,7 @@ app.post("/claim", async function (req, res) {
 
   if (!claimCooldownPassed(user.lastClaim)) {
     const nextClaimAvailableAt = new Date(
-      user.lastClaim.getTime() + 24 * 60 * 60 * 1000
+      new Date(user.lastClaim).getTime() + 24 * 60 * 60 * 1000
     );
     const timeLeft = nextClaimAvailableAt.getTime() - new Date().getTime();
     const hours = Math.round(timeLeft/1000/60/60%24);
