@@ -63,50 +63,51 @@ app.post("/claim", async function (req, res) {
   const event = req.body.event;
   const currentIp =
   req.headers["x-forwarded-for"] || req.ip || req.socket.remoteAddress;
+  const logMessages = [];
   
   if (!event.isTrusted) {
     res.json({ error: "Somtheing vary bad happened!" });
-    console.log('Event is not trusted');
+    logMessages.push('Event is not trusted');
     return;
   }
-  console.log('Event is trusted');
+  logMessages.push('Event is trusted');
 
   if (!address) {
     res.json({ error: "Provide valid BAN address to continue" });
-    console.log('Ban address was not provided');
+    logMessages.push('Ban address was not provided');
     return;
   }
-  console.log('Address is present');
+  logMessages.push('Address is present');
 
   /* 1. Validate address */
   const bAddressValid = await banano.getBananoAccountValidationInfo(address)
     .valid;
   if (!bAddressValid) {
     res.status(500).json({ error: "Invalid BAN address" });
-    console.log('Address is invalid');
+    logMessages.push('Address is invalid');
     return;
   }
-  console.log('Address is valid');
+  logMessages.push('Address is valid');
 
   /* 2. Unopened */
   const accHistory = await banano.getAccountHistory(address, -1);
   const bIsUnopened = accHistory.history.length === 0;
   if (bIsUnopened) {
     res.status(418).json({ error: "Unopened account" });
-    console.log('Account is unopened');
+    logMessages.push('Account is unopened');
     return;
   }
-  console.log('Account is opened');
+  logMessages.push('Account is opened');
 
   /* 3. Balance */
   const faucetWalletInfo = await banano.getAccountInfo(config.faucetWallet);
 
   if (Number(faucetWalletInfo.balance_decimal) < config.claimAmount) {
     res.status(500).json({ error: "Balance too low. Please try again later" });
-    console.log('Balance low');
+    logMessages.push('Balance low');
     return;
   }
-  console.log('Balance is sufficient');
+  logMessages.push('Balance is sufficient');
   /* 4. Check wether this address already grabbed a claim */
 
   const sql = `SELECT * FROM Users WHERE address='${address}'`;
@@ -118,17 +119,17 @@ app.post("/claim", async function (req, res) {
 
   if (!claimCooldownPassed(user.lastClaim)) {
     res.status(418).json({ error: "Come back later" });
-    console.log('User is on cooldown');
+    logMessages.push('User is on cooldown');
     return;
   }
-  console.log('User is not on cooldown');
+  logMessages.push('User is not on cooldown');
   // 6. Check wether address is blacklisted
   if (user.banned) {
     res.status(418).json({ error: "You were banned. Bye" });
-    console.log('User banned');
+    logMessages.push('User banned');
     return;
   }
-  console.log('User is not banned');
+  logMessages.push('User is not banned');
   // 7. Check same IP-address already grabbed
 
   const usersWithSameIp = await database.all(
@@ -145,11 +146,11 @@ app.post("/claim", async function (req, res) {
 
     if (!claimCooldownPassed(theUser.lastClaim)) {
       res.status(418).json({ error: "Come back later" });
-      console.log('Same IP check failed');
+      logMessages.push('Same IP check failed');
       return;
     }
   }
-  console.log('IP check passed');
+  logMessages.push('IP check passed');
   // 8. All good. Send
   
   try {  
@@ -157,7 +158,7 @@ app.post("/claim", async function (req, res) {
     res.json({ hash: hash });
   } catch (e) {
     res.status(500).json({ error: err });
-    console.log('Send banano failed and catched');
+    logMessages.push('Send banano failed and catched');
   }
 
   // 8.1 Check transaction?!
@@ -169,10 +170,12 @@ app.post("/claim", async function (req, res) {
     .then(() => {
       //updates silently
       // res.json({ message: "Successful claim"});
-      console.log('User updated after a claim');
+      logMessages.push('User updated after a claim');
+      console.log(logMessages.join(' '));
     })
     .catch((err) => {
-      console.log(err);
+      logMessages.push(err);
+      console.log(logMessages.join(' '));
       res.status(500).json({ error: "Something went wrong. Hold on" });
     });
 });
