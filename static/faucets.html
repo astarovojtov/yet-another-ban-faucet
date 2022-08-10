@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Faucet List - Yet Another BAN Faucet</title>
+        <meta charset="UTF-8">
+        <meta name="description" content="Get free banano cryptocurrency every day">
+        <meta name="keywords" content="Crypto, Cryptocurrency, Faucet, BAN, Banano, ">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body style="min-height: 100vh">
+        <nav>
+            <div class="nav shadow">
+            <a href="/" alt="Yet Another Ban Faucet">Home</a>
+            </div>
+        </nav>
+        <section class="ad"></section>
+        <p class="kinda-logo">Faucet List</p>
+        <section class="faucet-list">
+            <table>
+                <thead>
+                    <tr>
+                        <td>Name</td>
+                        <td>Frequency</td>
+                        <td colspan="2">Last transaction</td>
+                        <td></td>
+                        <!-- <td>Last transaction</td> -->
+                    </tr>
+                </thead>
+                <tbody>
+
+                </tbody>
+            </table>
+        </section>
+    </body>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        const faucetList = document.querySelector('.faucet-list tbody');
+        fetch('/faucets').then( res => res.json())
+            .then( list => {
+                list.filter( faucet => !!faucet.address)
+                    .forEach( faucet => {
+                    const row = document.createElement('tr');
+                    fetch(`/faucetstatus?url=${faucet.url}&account=${faucet.address}`)
+                        .then( response => response.json())
+                        .then( response => {
+                            //const status = renderCell({ sType: 'status' });
+                            
+                            const link = renderCell({ sType: 'link', url: faucet.url, name: faucet.name});
+                            const frequency = renderCell({ sType: 'text', textContent: faucet.frequency });
+                            const payout = renderCell({ sType: 'text', textContent: Number(response.lastTrx.amount).toFixed(2) });
+                            lastTrxTime = (new Date().getTime() - new Date(response.lastTrx.date).getTime())/1000/60%60;
+                            const transaction = renderCell({ sType: 'text', textContent: `${Math.round(lastTrxTime)}h ago` });
+
+                            //row.append(status);
+                            row.append(link);
+                            row.append(frequency);
+                            row.append(payout);
+                            row.append(transaction);
+                            faucetList.append(row);
+                            })
+                        .catch( err => console.log(err));
+                });
+            })
+        });
+
+        function renderCell(config) {
+            const cell = document.createElement('td');
+            if (config.sType === 'text') cell.innerText = config.textContent;
+            if (config.sType === 'link') {
+                const link = document.createElement('a');
+                link.setAttribute('href', `https:\/\/${config.url}`);
+                link.setAttribute('target', "_blank");
+                link.innerText = config.name;
+                cell.append(link);
+            }
+            return cell;
+        }
+    </script>
+</html>

@@ -3,6 +3,8 @@ const app = express();
 const banano = require("@bananocoin/bananojs");
 const database = require("./db");
 const sanitizeHtml = require("sanitize-html");
+const https = require('https');
+const { response } = require("express");
 const config = {
   faucetWallet:
     "ban_3f1o95qeeg1zignw11ew5sfaxhzogsj3hzm377xjtmab8hwz535p6f96i5uu",
@@ -33,7 +35,7 @@ database.initDb(false /*pushMock*/).then(async (sqlite) => {
           norm.push(next);
         }
     });
-    //
+    
     const sqlRows = norm.map( (item, index) => `('${item.account}', 0, '${new Date(item.local_timestamp * 1000).toISOString()}', '::1', 'Pushed from history')`);
     const sql = `INSERT INTO Users ( address, banned, lastClaim, ip, comment) VALUES `.concat(sqlRows.join(','));
     database.run(sql)
@@ -196,6 +198,238 @@ app.post("/claim", async function (req, res) {
       return;
     });
 });
+
+app.get("/faucets", async function(req, res) {
+  const faucetList = [{
+    name: "BanFaucet",
+    url: "banfaucet.com",
+    frequency: "5 min",
+    address: ""
+  },
+  {
+    name: "K3i's Faucet",
+    url: "bananofaucet.online",
+    frequency: "30 min",
+    address: ""
+  },
+  {
+    name: "Banano Planet",
+    url: "bananoplanet.cc",
+    frequency: "2 hours",
+    address: "ban_3p1anetee7arfx9zbmspwf9c8c5r88wy6zkgwcbt7rndtcqsoj6fzuy11na3"
+  },
+  {
+    name: "Try Banano",
+    url: "trybanano.com",
+    frequency: "2 hours",
+    address: "ban_33umod1td1x1szyjxj1a4c66j8s5escrii6ptnykz9axcsce93dqguwgwf78"
+  },
+  {
+    name: "BanBucket",
+    url: "www.banbucket.ninja",
+    frequency: "15 hours",
+    address: "ban_1j3rqseffoin7x5z5y1ehaqe1n7todza41kdf4oyga8phps3ea31u39ruchu"
+  },
+  {
+    name: "NanSwap",
+    url: "nanswap.com/get-free-banano",
+    frequency: "daily",
+    address: "ban_36seefx46pwcpyp6a8kukybamqioam6a7jef88s8esjpubyc8urccebjqgyj"
+  },
+  {
+    name: "Nano2Go",
+    url: "nano2go.herokuapp.com",
+    frequency: "daily",
+    address: "ban_36seefx46pwcpyp6a8kukybamqioam6a7jef88s8esjpubyc8urccebjqgyj"
+  },
+  {
+    name: "icanhaznano faucet",
+    url: "icanhaznano.monke42.tk",
+    frequency: "daily",
+    address: "ban_1monkecrqoqr6j6qzhtd9i8x49ujdnoqt7ramt9jmhd543icsrx5accoqtd5"
+  },
+  {
+    name: "MonkeyTalks",
+    url: "monkeytalks.cc",
+    frequency: "daily",
+    address: "ban_1monkeyt1x77a1rp9bwtthajb8odapbmnzpyt8357ac8a1bcron34i3r9y66"
+  },
+  {
+    name: "TNV's Faucet",
+    url: "banano-faucet.herokuapp.com",
+    frequency: "daily",
+    address: "ban_3uf1gx114fqm9ppiwp3sw1mywzzr9d8uwhrw9e85zpgdt48eopruqnqpdb68"
+  },
+  {
+    name: "Prussia's Faucet",
+    url: "faucet.prussia.dev",
+    frequency: "daily",
+    address: "ban_3346kkobb11qqpo17imgiybmwrgibr7yi34mwn5j6uywyke8f7fnfp94uyps"
+  },
+  {
+    name: "BananoForest",
+    url: "faucet.bananoforest.com",
+    frequency: "daily",
+    address: "ban_3sinkoff1yj9z5fougwao1gbjtsmb98u1j5p9kcrndqcc4irdxgzsjbem96e"
+  },
+  {
+    name: "csquarednz's banano dispensary",
+    url: "getban.csquared.nz",
+    frequency: "daily",
+    address: "ban_3jyqzypmcn94dmyp7eb3k85sug1568xwehzx738o5jniaxaf1jpxdakjz96r"
+  },
+  // {
+  //   name: "BananoTime's Faucet",
+  //   url: "faucet.bananotime.com",
+  //   frequency: "daily",
+  //   address: ""
+  // },
+  {
+    name: "Perry's Banano Faucet",
+    url: "banfaucet.perrypal21.repl.co",
+    frequency: "daily",
+    address: "ban_3tn9xt9sxbyw9injikki3yis5fbn6m47x37gco5cw6e6x6z7z4639cdgzke6"
+  },
+  {
+    name: "iMalFect's Faucet",
+    url: "getbanano.cc",
+    frequency: "daily",
+    address: "ban_1w9xjfydphp3cpmfjtnmfstjo3t4kr7n3zfwzaq4i7crpmjzc9535z1j5ahf"
+  },
+  {
+    name: "OnlyBans",
+    url: "www.only-bans.cc",
+    frequency: "daily",
+    address: "ban_1on1ybanskzzsqize1477wximtkdzrftmxqtajtwh4p4tg1w6awn1hq677cp"
+  },
+  {
+    name: "Nord Faucet",
+    url: "nord.valejo.net",
+    frequency: "daily",
+    address: ""
+  },
+  {
+    name: "Bat's Faucet",
+    url: "banhub.com",
+    frequency: "daily",
+    address: ""
+  },
+  {
+    name: "BananoDrip",
+    url: "bananodrip.com",
+    frequency: "daily",
+    address: ""
+  },
+  {
+    name: "BananoFaucet.club",
+    url: "www.bananofaucet.club", /* on sale */
+    frequency: "",
+    address: ""
+  },
+  {
+    name: "Earns.cc Faucet",
+    url: "ban.earns.cc",
+    frequency: "daily",
+    address: ""
+  },
+  {
+    name: "BauCarp",
+    url: "baucarp.herokuapp.com",
+    frequency: "daily",
+    address: ""
+  },
+  {
+    name: "BananoFaucet",
+    url: "bananofaucet.cc",
+    frequency: "weekly",
+    address: "ban_1faucetjuiyuwnz94j4c7s393r95sk5ac7p5usthmxct816osgqh3qd1caet"
+  },
+  {
+    name: "Bonobo Faucet",
+    url: "bonobo.cc/faucet",
+    frequency: "weekly",
+    address: "ban_3faubo4bfzexkbodi67c74ut1a6it64chofgobbag87yfmy1x457jbsdccd4"
+  },
+  {
+    name: "Yet Another Ban Faucet",
+    url: "yet-another-ban-faucet.herokuapp.com",
+    frequency: "daily",
+    address: ""
+  },
+  {
+    name: "Pronoun Faucet",
+    url: "banpridefaucet.repl.co",
+    frequency: "daily",
+    address: "ban_3eeq61ea33jdds5x37otx51esi8wsnxxjc8spjajyq7pj8h3nodkd19pride"
+  },
+  {
+    name: "Barrel O' Bananos",
+    url: "barrel.devinmontes.com",
+    frequency: "daily",
+    address: "ban_1barre1777qqdcg86788tk6ojy9jmkyb8ridreezbgkhr7btnoqcntejrxhf"
+  }, {
+    name: "Gorilla Nation",
+    url: "gorillanation.ga",
+    frequency: "daily",
+    address: "ban_1gori11a7fz3tee6aydqxcehttzbuk93pjsctanfkgqmesa3dmo1cyw89xex"
+  }];
+
+  res.json(faucetList);
+});
+
+app.get('/faucetstatus', async (req, res) => {
+  const url = req.query.url.split('/')[0];
+  const path = req.query.url.split('/')[1];
+  const account = req.query.account;
+  
+  const httpRequest = await https.request({
+    host: url,
+    path: path,
+    method: 'HEAD'
+  }, response => {
+    response.on('data', () => {});
+    response.on('error', err => { 
+      console.log('I think we got an error here'); //doesn't work on connection refused
+    })
+    response.on('end', () => {
+      
+    })
+  }).end();
+
+  const info = {
+    status: response.statusCode,
+    lastTrx: {
+      date: null,
+      amount: null
+    }
+  };
+
+  if (!account) {
+    return res.status(418).json(info);
+  }
+
+  banano.getAccountHistory(account, 10)
+    .then( acnt => { 
+  
+      const sent = acnt.history.filter( trx => trx.type === 'send' );
+  
+      if (sent.length === 0) {
+        return res.json(info);
+      }
+      
+      const lastTrx = sent.sort( (a,b) => new Date(a.local_timestamp * 1000) > new Date(b.local_timestamp * 1000)).pop();
+      info.lastTrx.date = new Date(lastTrx.local_timestamp * 1000);
+      info.lastTrx.amount = lastTrx.amount_decimal;
+      return res.json(info);
+    }).catch(e => {
+      res.status(418).json(info);
+    })
+  
+});
+
+process.on('uncaughtException', function (err) {
+  console.log(err);
+}); 
 
 app.listen(process.env.PORT || 5000);
 
