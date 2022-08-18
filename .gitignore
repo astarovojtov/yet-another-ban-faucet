@@ -1,2 +1,5 @@
 node_modules
 todo.txt
+database.sqlite
+.gitignore
+.DS_Store

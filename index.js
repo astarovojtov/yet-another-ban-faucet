@@ -55,9 +55,14 @@ app.get("/users", async function (req, res) {
 });
 
 app.get("/balance", async function (req, res) {
-  const balance = await banano.getAccountInfo(config.faucetWallet);
-  
-  res.json({ balance: balance.balance_decimal });
+  const balance = await banano.getAccountInfo(config.faucetWallet).catch(e => {
+    //{"body":"","statusCode":522}
+    return e;
+  });
+  if (!balance.balance_decimal) {
+    return res.status(balance.statusCode).json({ error: balance.body })
+  }
+  return res.json({ balance: balance.balance_decimal });
 });
 
 app.post("/claim", async function (req, res) {

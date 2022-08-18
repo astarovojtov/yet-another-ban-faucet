@@ -88,7 +88,12 @@
         fetch('/balance').then( res => res.json()).then( res => {
             document.getElementById('balance').innerText = Number(res.balance).toFixed(2);
         }).catch( e => {
+            if (!e.error || e.error.length === 0) {
+                vt.error('Banano API is down. Try again later');
+                return;
+            }
             vt.error(e.error);
+            return;
         });
 
         fetch('/users')
